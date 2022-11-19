@@ -9,15 +9,16 @@ export default function Header(props: { pages: Page[] }) {
   const navigate = useNavigate()
 
   return (
-    <Navbar bg="light">
+    <Navbar bg="light" expand={false}>
       <Container>
         <Navbar.Brand
           className="cursor-pointer"
           onClick={() => navigate('/')}>
           Matchups.com
         </Navbar.Brand>
-        <Navbar.Collapse>
-          <Nav>
+        <Navbar.Toggle aria-controls="header-nav" />
+        <Navbar.Collapse id="header-nav">
+          <Nav className="me-auto">
             {pages.map(p =>
               <Nav.Link
                 key={p.path}
