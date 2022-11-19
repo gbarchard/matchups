@@ -1,6 +1,6 @@
 function App() {
   return (
-    <div>
+    <div className="text-green-500">
       My app
     </div>
   );
