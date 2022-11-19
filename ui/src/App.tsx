@@ -1,12 +1,32 @@
-import Button from "react-bootstrap/Button";
+import Header from './components/Header'
+import Home from './pages/home/App'
+import Matchups from './pages/matchups/App'
+import { type Page } from './pages/types';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
-function App() {
+const pages: Page[] = [
+  {
+    name: "Home",
+    path: "/home",
+    component: <Home />
+  },
+  {
+    name: "Matchups",
+    path: "/matchups",
+    component: <Matchups />
+  }
+]
+
+export default function App() {
   return (
-    <div>
-      <Button variant="primary">got here</Button>
-      <div className="text-green-600">got here</div>
-    </div>
+    <BrowserRouter>
+      <Header pages={pages} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        {pages.map(p =>
+          <Route key={p.path} path={p.path} element={p.component} />
+        )}
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App;
