@@ -1,5 +1,6 @@
 import Container from "react-bootstrap/Container"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { useFetch } from "usehooks-ts"
 import Header from "./components/Header"
 import Home from "./pages/home/App"
 import Matchups from "./pages/matchups/App"
@@ -26,9 +27,12 @@ const pages: Page[] = [
 ]
 
 export default function App() {
+  const { data } = useFetch<string>("http://localhost:9000/got-here")
+
   return (
     <BrowserRouter>
       <Header pages={pages} />
+      <div>{data}</div>
       <Container>
         <Routes>
           <Route path="/" element={<Home />} />

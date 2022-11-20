@@ -1,8 +1,11 @@
 import express from "express"
+import cors from "cors"
 import { gotHere } from "./test"
 
 const app = express()
-const port = 3001
+const port = process.env.port || 9000
+
+app.use(cors())
 
 app.listen(port, () => {
   console.log(`Node api is running on port ${port}.`)
