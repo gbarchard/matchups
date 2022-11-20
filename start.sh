@@ -1,0 +1,1 @@
+cd api && npm run serve & cd ui && npm start
