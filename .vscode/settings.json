@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "*.css": "tailwindcss"
-    }
+        "*.css": "tailwindcss",
+    },
+    "editor.formatOnSave": true,
+    "prettier.semi": false
 }
