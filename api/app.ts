@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
-import { gotHere } from "./test"
+import { gotHere } from "./services/gotHere.service"
+import { connectToDatabase } from "./services/database.service"
 
 const app = express()
 const port = process.env.port || 9000
@@ -12,3 +13,5 @@ app.listen(port, () => {
 })
 
 app.get("/got-here", gotHere)
+
+connectToDatabase()
