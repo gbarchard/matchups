@@ -3,6 +3,7 @@ import Nav from "react-bootstrap/Nav"
 import Navbar from "react-bootstrap/Navbar"
 import { useNavigate } from "react-router-dom"
 import { type Page } from "../pages/types"
+import UserLogin from "./UserLogin"
 
 export default function Header(props: { pages: Page[] }) {
   const { pages } = props
@@ -16,7 +17,7 @@ export default function Header(props: { pages: Page[] }) {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="header-nav" />
         <Navbar.Collapse id="header-nav">
-          <Nav className="me-auto">
+          <Nav className="container-fluid">
             {pages
               .filter((p) => !p.hiddenFromNav)
               .map((p) => (
@@ -24,6 +25,9 @@ export default function Header(props: { pages: Page[] }) {
                   {p.name}
                 </Nav.Link>
               ))}
+            <Nav.Item className="lg:ml-auto">
+              <UserLogin />
+            </Nav.Item>
           </Nav>
         </Navbar.Collapse>
       </Container>

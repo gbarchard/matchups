@@ -1,6 +1,8 @@
+import { Auth0Provider } from "@auth0/auth0-react"
+import { PropsWithChildren } from "react"
 import Container from "react-bootstrap/Container"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { useFetch } from "usehooks-ts"
+import { AppContextProvider, useAppConfigState } from "./components/AppContext"
 import Header from "./components/Header"
 import Home from "./pages/home/App"
 import Matchups from "./pages/matchups/App"
@@ -27,20 +29,42 @@ const pages: Page[] = [
 ]
 
 export default function App() {
-  const { data } = useFetch<string>("http://localhost:9000/got-here")
-
   return (
-    <BrowserRouter>
+    <GlobalProviders>
       <Header pages={pages} />
-      <div>{data}</div>
       <Container>
         <Routes>
-          <Route path="/" element={<Home />} />
           {pages.map((p) => (
             <Route key={p.path} path={p.path} element={p.component} />
           ))}
         </Routes>
       </Container>
-    </BrowserRouter>
+    </GlobalProviders>
+  )
+}
+
+function GlobalProviders(props: PropsWithChildren) {
+  const appState = useAppConfigState()
+
+  if (!process.env.REACT_APP_AUTH_DOMAIN) {
+    throw new Error("Missing REACT_APP_AUTH_DOMAIN")
+  }
+
+  if (!process.env.REACT_APP_AUTH_CLIENT_ID) {
+    throw new Error("Missing REACT_APP_AUTH_CLIENT_ID")
+  }
+
+  return (
+    <AppContextProvider state={appState}>
+      <BrowserRouter>
+        <Auth0Provider
+          domain={process.env.REACT_APP_AUTH_DOMAIN}
+          clientId={process.env.REACT_APP_AUTH_CLIENT_ID}
+          audience={`https://${process.env.REACT_APP_AUTH_DOMAIN}/api/v2/`}
+        >
+          {props.children}
+        </Auth0Provider>
+      </BrowserRouter>
+    </AppContextProvider>
   )
 }

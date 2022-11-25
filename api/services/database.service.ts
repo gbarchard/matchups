@@ -1,17 +1,16 @@
-import * as mongoDB from "mongodb"
+import { MongoClient } from "mongodb"
+import { AppCollections } from "./types"
 
-export const collections: { got_here?: mongoDB.Collection } = {}
+export const collections: AppCollections = {}
 
 export async function connectToDatabase() {
-  /** @todo store this somewhere else */
-  const client = new mongoDB.MongoClient("mongodb://localhost:27017")
+  const client = new MongoClient(process.env.MONGO_URL)
 
   await client.connect()
 
-  /** @todo store this somewhere else */
-  const db: mongoDB.Db = client.db("test")
+  const db = client.db(process.env.MONGO_DB)
 
-  collections.got_here = db.collection("got_here")
+  ;(await db.collections()).forEach((c) => (collections[c.collectionName] = c))
 
   console.log(`Successfully connected to database: ${db.databaseName}`)
 }
