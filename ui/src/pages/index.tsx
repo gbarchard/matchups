@@ -11,7 +11,7 @@ export const pages: Page[] = [
   },
   {
     name: "Matchups",
-    path: "/matchups",
+    path: "/matchups/*",
     component: <Matchups />,
   },
   {

@@ -21,7 +21,10 @@ export default function Header(props: { pages: Page[] }) {
             {pages
               .filter((p) => !p.hiddenFromNav)
               .map((p) => (
-                <Nav.Link key={p.path} onClick={() => navigate(p.path)}>
+                <Nav.Link
+                  key={p.path}
+                  onClick={() => navigate(p.path.replace("*", ""))}
+                >
                   {p.name}
                 </Nav.Link>
               ))}
