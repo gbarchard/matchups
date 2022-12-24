@@ -1,6 +1,4 @@
-import Container from "react-bootstrap/Container"
-import Nav from "react-bootstrap/Nav"
-import Navbar from "react-bootstrap/Navbar"
+import { Navbar } from "flowbite-react"
 import { useNavigate } from "react-router-dom"
 import { type Page } from "../pages/types"
 import UserLogin from "./UserLogin"
@@ -10,30 +8,26 @@ export default function Header(props: { pages: Page[] }) {
   const navigate = useNavigate()
 
   return (
-    <Navbar bg="light" expand="lg">
-      <Container>
-        <Navbar.Brand className="cursor-pointer" onClick={() => navigate("/")}>
-          Matchups.com
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="header-nav" />
-        <Navbar.Collapse id="header-nav">
-          <Nav className="container-fluid">
-            {pages
-              .filter((p) => !p.hiddenFromNav)
-              .map((p) => (
-                <Nav.Link
-                  key={p.path}
-                  onClick={() => navigate(p.path.replace("*", ""))}
-                >
-                  {p.name}
-                </Nav.Link>
-              ))}
-            <Nav.Item className="lg:ml-auto">
-              <UserLogin />
-            </Nav.Item>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
+    <Navbar fluid>
+      <Navbar.Brand
+        className="cursor-pointer py-2 dark:text-gray-400 dark:hover:text-white"
+        onClick={() => navigate("/")}
+      >
+        Matchups.com
+      </Navbar.Brand>
+      <div className="flex md:order-2 gap-4">
+        <UserLogin />
+        <Navbar.Toggle />
+      </div>
+      <Navbar.Collapse>
+        {pages
+          .filter((p) => !p.hiddenFromNav)
+          .map((p) => (
+            <Navbar.Link href={p.path.replace("*", "")} key={p.path}>
+              {p.name}
+            </Navbar.Link>
+          ))}
+      </Navbar.Collapse>
     </Navbar>
   )
 }

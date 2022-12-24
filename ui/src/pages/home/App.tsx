@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
+import { Typography } from "../../components/Typography"
 
 export default function App() {
   // This is an example for using access token
@@ -17,5 +18,9 @@ export default function App() {
     })
   }, [getAccessTokenSilently, isAuthenticated])
 
-  return <div>Home Page</div>
+  return (
+    <Typography>
+      <h1>Home Page</h1>
+    </Typography>
+  )
 }

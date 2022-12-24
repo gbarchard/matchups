@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Table } from "react-bootstrap"
+import { Table } from "flowbite-react"
 import { type Character } from "../types"
 import CharacterLabel from "./CharacterLabel"
 
@@ -10,25 +10,23 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
   const vistCharacterPage = (path: string) => navigate(path)
 
   return (
-    <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>Character</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table striped hoverable>
+      <Table.Head>
+        <Table.HeadCell>Character</Table.HeadCell>
+      </Table.Head>
+      <Table.Body>
         {characters.map((c) => (
-          <tr
+          <Table.Row
             className="cursor-pointer"
             key={c.path}
             onClick={() => vistCharacterPage(c.path)}
           >
-            <td>
+            <Table.Cell>
               <CharacterLabel character={c} />
-            </td>
-          </tr>
+            </Table.Cell>
+          </Table.Row>
         ))}
-      </tbody>
+      </Table.Body>
     </Table>
   )
 }

@@ -1,7 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react"
-import { Button, Table } from "react-bootstrap"
+import { Table } from "flowbite-react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { useFetch } from "usehooks-ts"
+import { Typography } from "../../../components/Typography"
 
 import { Character, Vote } from "../types"
 import CharacterLabel from "./CharacterLabel"
@@ -53,52 +54,53 @@ function CharacterPageContent(props: {
     }
   )
 
-  const goBack = () => navigate("/matchups")
-
   return (
     <>
-      <Button variant="link" onClick={goBack}>
-        Back to Matchups
-      </Button>
-      <h1>{selectedCharachter.label}</h1>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Character</th>
-            <th>Vour Vote</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Typography>
+        <h1 className="mb-4">{selectedCharachter.label}</h1>
+      </Typography>
+      <Table striped hoverable>
+        <Table.Head>
+          <Table.HeadCell>Character</Table.HeadCell>
+          <Table.HeadCell>Vour Vote</Table.HeadCell>
+        </Table.Head>
+        <Table.Body>
           {allCharacters.map((c) => (
-            <tr
+            <Table.Row
               className="cursor-pointer"
               key={c.path}
               onClick={() => visitMatchupPage(c.path)}
             >
-              <td>
+              <Table.Cell>
                 <CharacterLabel character={c} />
-              </td>
+              </Table.Cell>
               {votes && user?.sub && (
-                <td>
+                <Table.Cell>
                   <VoteButtonGroup
                     as={selectedCharachter}
                     against={c}
-                    defaultValue={getVoteValue(votes, c.path)}
+                    defaultValue={
+                      selectedCharachter.path === c.path
+                        ? 0.5
+                        : getVoteValue(votes, c.path)
+                    }
                   />
-                </td>
+                </Table.Cell>
               )}
-              {!user && <td>Log in</td>}
-            </tr>
+              {!user && <Table.Cell>Log in</Table.Cell>}
+            </Table.Row>
           ))}
-        </tbody>
+        </Table.Body>
       </Table>
     </>
   )
 }
 
 function getVoteValue(votes: Vote[], characterId: string) {
-  return (
+  const value =
     votes.find((v) => v.data[0].characterId === characterId)?.data[1].value ??
     votes.find((v) => v.data[1].characterId === characterId)?.data[0].value
-  )
+
+  console.log(value)
+  return value
 }

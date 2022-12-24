@@ -1,5 +1,4 @@
 import { Character } from "../types"
-import Image from "react-bootstrap/Image"
 import * as characterIcons from "../../../img"
 
 export default function CharacterLabel(props: { character: Character }) {
@@ -7,7 +6,8 @@ export default function CharacterLabel(props: { character: Character }) {
   return (
     <div className="flex space-x-2">
       <div>
-        <Image
+        <img
+          alt={`icon of ${character.label}`}
           width={25}
           height={25}
           src={
@@ -17,7 +17,7 @@ export default function CharacterLabel(props: { character: Character }) {
           }
         />
       </div>
-      <div>{character.label}</div>
+      <span>{character.label}</span>
     </div>
   )
 }

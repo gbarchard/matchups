@@ -1,16 +1,14 @@
-import { useNavigate } from "react-router-dom"
 import { useFetch } from "usehooks-ts"
 import { Vote, type Character } from "../types"
 import VoteButtonGroup from "./VoteButtonGroup"
 import { useAuth0 } from "@auth0/auth0-react"
+import { Typography } from "../../../components/Typography"
 
 export default function MatchupPage(props: {
   characterAs: Character
   characterAgainst: Character
 }) {
   const { characterAgainst, characterAs } = props
-  const navigate = useNavigate()
-  const goBack = () => navigate(`/matchups/${characterAs.path}`)
   const { user } = useAuth0()
 
   const body = {
@@ -31,10 +29,11 @@ export default function MatchupPage(props: {
 
   return (
     <>
-      <div onClick={goBack}>Go Back</div>
-      <div>
-        {characterAs.label} vs {characterAgainst.label}
-      </div>
+      <Typography>
+        <h1 className="mb-4">
+          {characterAs.label} vs {characterAgainst.label}
+        </h1>
+      </Typography>
       {vote !== undefined && user?.sub && (
         <VoteButtonGroup
           against={characterAgainst}

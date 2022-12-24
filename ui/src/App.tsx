@@ -1,7 +1,7 @@
 import { Auth0Provider } from "@auth0/auth0-react"
-import { PropsWithChildren } from "react"
-import Container from "react-bootstrap/Container"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Breadcrumb } from "flowbite-react"
+import { PropsWithChildren, useMemo } from "react"
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom"
 import { AppContextProvider, useAppConfigState } from "./components/AppContext"
 import Header from "./components/Header"
 import { pages } from "./pages"
@@ -9,14 +9,17 @@ import { pages } from "./pages"
 export default function App() {
   return (
     <GlobalProviders>
-      <Header pages={pages} />
-      <Container>
-        <Routes>
-          {pages.map((p) => (
-            <Route key={p.path} path={p.path} element={p.component} />
-          ))}
-        </Routes>
-      </Container>
+      <div className="flex flex-col h-full">
+        <Header pages={pages} />
+        <div className="dark:bg-gray-900 flex-1 overflow-scroll px-2 sm:px-4">
+          <Breadcrumbs className="my-2" />
+          <Routes>
+            {pages.map((p) => (
+              <Route key={p.path} path={p.path} element={p.component} />
+            ))}
+          </Routes>
+        </div>
+      </div>
     </GlobalProviders>
   )
 }
@@ -45,4 +48,32 @@ function GlobalProviders(props: PropsWithChildren) {
       </BrowserRouter>
     </AppContextProvider>
   )
+}
+
+function Breadcrumbs(props: { className?: string }) {
+  const { className } = props
+  const location = useLocation()
+  const breadcrumbs = useMemo(
+    () => location.pathname.split("/").filter((b) => b !== ""),
+    [location]
+  )
+
+  return (
+    <Breadcrumb className={className}>
+      <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+      {breadcrumbs.map((b, i) => (
+        <Breadcrumb.Item
+          key={`breadcrumb-item-${i}`}
+          href={`/${breadcrumbs.slice(0, i + 1).join("/")}`}
+        >
+          {title(b.replace("-", " "))}
+        </Breadcrumb.Item>
+      ))}
+    </Breadcrumb>
+  )
+}
+
+/** Capitalizes the first letter of every word */
+function title(s: string) {
+  return s.replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
 }

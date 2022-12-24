@@ -1,17 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}"
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}"
   ],
+  darkMode: 'media',
   theme: {
-    screens: {
-      sm: '576px',
-      md: '768px',
-      lg: '992px',
-      xl: '1200px',
-      '2xl': '1400px'
-    },
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin'),
+    require('flowbite-typography')
+  ],
 }

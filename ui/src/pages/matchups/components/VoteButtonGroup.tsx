@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { useState } from "react"
-import { ButtonGroup, ToggleButton } from "react-bootstrap"
+import { Button } from "flowbite-react"
 import { Character, Vote } from "../types"
 
 type MatchupOption = {
@@ -42,7 +42,7 @@ const MATCHUP_OPTIONS: MatchupOption[] = [
 export default function VoteButtonGroup(props: {
   as: Character
   against: Character
-  defaultValue?: number
+  defaultValue?: number | null
 }) {
   const { against, as, defaultValue } = props
   const [option, setOption] = useState<MatchupOption | null | undefined>(
@@ -75,15 +75,14 @@ export default function VoteButtonGroup(props: {
   }
 
   return (
-    <ButtonGroup>
+    <Button.Group>
       {MATCHUP_OPTIONS.map((o, i) => (
-        <ToggleButton
+        <Button
+          className={o.value === option?.value ? "!bg-blue-500" : ""}
           key={i}
           disabled={isDitto}
           value={o?.value}
-          type="radio"
-          variant="outline-secondary"
-          checked={isDitto ? o.value === 0.5 : o.value === option?.value}
+          color="gray"
           size="sm"
           onClick={(e) => {
             e.stopPropagation()
@@ -92,8 +91,8 @@ export default function VoteButtonGroup(props: {
           }}
         >
           {o.label}
-        </ToggleButton>
+        </Button>
       ))}
-    </ButtonGroup>
+    </Button.Group>
   )
 }
