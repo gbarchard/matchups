@@ -1,0 +1,13 @@
+[
+    {
+        "id": "1",
+        "label": "Mario",
+        "path": "mario"
+    },
+    {
+        "id": "2",
+        "label": "Donkey Kong",
+        "path": "donkey-kong"
+
+    }
+]
