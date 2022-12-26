@@ -8,6 +8,10 @@
         "id": "2",
         "label": "Donkey Kong",
         "path": "donkey-kong"
-
+    },
+    {
+        "id": "3",
+        "label": "Link",
+        "path": "link"
     }
 ]
