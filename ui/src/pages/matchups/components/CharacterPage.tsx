@@ -54,14 +54,26 @@ function CharacterPageContent(props: {
     }
   )
 
+  const { data: averages } = useFetch<{ [key: string]: number }>(
+    `${process.env.REACT_APP_API_BASE_URL}/api/average-votes`,
+    {
+      method: "POST",
+      body: JSON.stringify({ characterId: selectedCharachter.path }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+
   return (
     <>
-      <Typography>
-        <h1 className="mb-4">{selectedCharachter.label}</h1>
+      <Typography className="mb-4">
+        <h1>{selectedCharachter.label}</h1>
       </Typography>
       <Table striped hoverable>
         <Table.Head>
           <Table.HeadCell>Character</Table.HeadCell>
+          <Table.HeadCell>Average Matchup</Table.HeadCell>
           <Table.HeadCell>Vour Vote</Table.HeadCell>
         </Table.Head>
         <Table.Body>
@@ -74,6 +86,7 @@ function CharacterPageContent(props: {
               <Table.Cell>
                 <CharacterLabel character={c} />
               </Table.Cell>
+              <Table.Cell>{averages?.[c.path] ?? "-"}</Table.Cell>
               {votes && user?.sub && (
                 <Table.Cell>
                   <VoteButtonGroup
@@ -81,7 +94,7 @@ function CharacterPageContent(props: {
                     against={c}
                     defaultValue={
                       selectedCharachter.path === c.path
-                        ? 0.5
+                        ? 50
                         : getVoteValue(votes, c.path)
                     }
                   />
@@ -97,10 +110,8 @@ function CharacterPageContent(props: {
 }
 
 function getVoteValue(votes: Vote[], characterId: string) {
-  const value =
+  return (
     votes.find((v) => v.data[0].characterId === characterId)?.data[1].value ??
     votes.find((v) => v.data[1].characterId === characterId)?.data[0].value
-
-  console.log(value)
-  return value
+  )
 }

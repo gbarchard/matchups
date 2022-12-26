@@ -27,12 +27,29 @@ export default function MatchupPage(props: {
     }
   )
 
+  const { data: average } = useFetch<number>(
+    `${process.env.REACT_APP_API_BASE_URL}/api/average-vote`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        characterIds: [characterAs.path, characterAgainst.path],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+
+  const isDitto = characterAs.path === characterAgainst.path
+  const title = isDitto
+    ? `${characterAs.label} Ditto`
+    : `${characterAs.label} vs ${characterAgainst.label}`
+
   return (
     <>
       <Typography>
-        <h1 className="mb-4">
-          {characterAs.label} vs {characterAgainst.label}
-        </h1>
+        <h1>{title}</h1>
+        <h2>Value: {average}</h2>
       </Typography>
       {vote !== undefined && user?.sub && (
         <VoteButtonGroup

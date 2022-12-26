@@ -23,7 +23,15 @@ export default function Header(props: { pages: Page[] }) {
         {pages
           .filter((p) => !p.hiddenFromNav)
           .map((p) => (
-            <Navbar.Link href={p.path.replace("*", "")} key={p.path}>
+            <Navbar.Link
+              // This so we can navigate without having to reload the whole page
+              href=""
+              onClick={(e) => {
+                e.preventDefault()
+                navigate(p.path.replace("/*", ""))
+              }}
+              key={p.path}
+            >
               {p.name}
             </Navbar.Link>
           ))}

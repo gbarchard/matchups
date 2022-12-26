@@ -2,7 +2,16 @@ import cors from "cors"
 import * as dotenv from "dotenv"
 import express from "express"
 import { auth } from "express-oauth2-jwt-bearer"
-import { gotHere, characters, getVote, getVotes, setVote } from "./api"
+import {
+  gotHere,
+  characters,
+  getMatchupAverage,
+  getVote,
+  getVotes,
+  setVote,
+  getMatchupAverages,
+  getTotalScores,
+} from "./api"
 import { connectToDatabase } from "./services/database.service"
 
 const app = express()
@@ -28,5 +37,8 @@ app.get("/api/characters", characters)
 app.post("/api/vote", getVote)
 app.post("/api/update-vote", setVote)
 app.post("/api/votes", getVotes)
+app.post("/api/average-vote", getMatchupAverage)
+app.post("/api/average-votes", getMatchupAverages)
+app.post("/api/total-scores", getTotalScores)
 
 connectToDatabase()

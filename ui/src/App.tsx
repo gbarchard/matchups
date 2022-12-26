@@ -1,7 +1,13 @@
 import { Auth0Provider } from "@auth0/auth0-react"
 import { Breadcrumb } from "flowbite-react"
 import { PropsWithChildren, useMemo } from "react"
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom"
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"
 import { AppContextProvider, useAppConfigState } from "./components/AppContext"
 import Header from "./components/Header"
 import { pages } from "./pages"
@@ -53,6 +59,7 @@ function GlobalProviders(props: PropsWithChildren) {
 function Breadcrumbs(props: { className?: string }) {
   const { className } = props
   const location = useLocation()
+  const navigate = useNavigate()
   const breadcrumbs = useMemo(
     () => location.pathname.split("/").filter((b) => b !== ""),
     [location]
@@ -60,11 +67,24 @@ function Breadcrumbs(props: { className?: string }) {
 
   return (
     <Breadcrumb className={className}>
-      <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+      <Breadcrumb.Item
+        href=""
+        onClick={(e) => {
+          e.preventDefault()
+          navigate("/")
+        }}
+      >
+        Home
+      </Breadcrumb.Item>
       {breadcrumbs.map((b, i) => (
         <Breadcrumb.Item
           key={`breadcrumb-item-${i}`}
-          href={`/${breadcrumbs.slice(0, i + 1).join("/")}`}
+          // This so we can navigate without having to reload the whole page
+          href=""
+          onClick={(e) => {
+            e.preventDefault()
+            navigate(`/${breadcrumbs.slice(0, i + 1).join("/")}`)
+          }}
         >
           {title(b.replace("-", " "))}
         </Breadcrumb.Item>

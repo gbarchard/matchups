@@ -5,9 +5,10 @@ export async function getVoteService(
   user_id: string,
   characterIds: [string, string]
 ) {
+  if (characterIds[0] === characterIds[1]) return null
   return await collections.votes.findOne({
     user_id,
-    $or: [
+    $and: [
       {
         data: { $elemMatch: { characterId: characterIds[0] } },
       },
@@ -32,6 +33,9 @@ export async function getVotesByCharacterService(
 
 export async function setVoteService(vote: Vote) {
   const { user_id, data } = vote
+
+  if (data[0].characterId === data[1].characterId) return null
+
   const existingVote = await getVoteService(user_id, [
     data[0].characterId,
     data[1].characterId,
@@ -45,4 +49,23 @@ export async function setVoteService(vote: Vote) {
     { _id: existingVote._id },
     { $set: { data } }
   )
+}
+
+export async function getAllVotesByMatchup(characterIds: [string, string]) {
+  return await collections.votes
+    .find({
+      $and: [
+        {
+          data: { $elemMatch: { characterId: characterIds[0] } },
+        },
+        {
+          data: { $elemMatch: { characterId: characterIds[1] } },
+        },
+      ],
+    })
+    .toArray()
+}
+
+export async function getAllVotes() {
+  return await collections.votes.find().toArray()
 }
