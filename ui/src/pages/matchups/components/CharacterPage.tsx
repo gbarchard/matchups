@@ -114,7 +114,7 @@ function CharacterPageContent(props: {
                 <CharacterLabel character={c} />
               </Table.Cell>
               <Table.Cell>{averages?.[c.id] ?? "-"}</Table.Cell>
-              {votes && user?.sub && (
+              {votes && (
                 <Table.Cell>
                   <VoteButtonGroup
                     as={selectedCharachter}
@@ -127,7 +127,6 @@ function CharacterPageContent(props: {
                   />
                 </Table.Cell>
               )}
-              {!user && <Table.Cell>Log in</Table.Cell>}
             </Table.Row>
           ))}
         </Table.Body>

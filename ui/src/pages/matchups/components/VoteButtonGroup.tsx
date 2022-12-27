@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 import { useState } from "react"
 import { Button } from "flowbite-react"
 import { Character, Vote } from "../types"
+import { Typography } from "../../../components/Typography"
 
 type MatchupOption = {
   label: string
@@ -48,7 +49,7 @@ export default function VoteButtonGroup(props: {
   const [option, setOption] = useState<MatchupOption | null | undefined>(
     MATCHUP_OPTIONS.find((o) => o.value === defaultValue)
   )
-  const { user } = useAuth0()
+  const { user, isLoading, loginWithRedirect } = useAuth0()
 
   const isDitto = as.id === against.id
 
@@ -74,13 +75,34 @@ export default function VoteButtonGroup(props: {
     })
   }
 
+  if (isDitto || isLoading) return null
+
+  if (!user) {
+    return (
+      <Typography>
+        <p className="whitespace-nowrap">
+          <a
+            href="a"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              loginWithRedirect({ redirectUri: window.location.origin })
+            }}
+          >
+            Log In
+          </a>
+          {" to vote"}
+        </p>
+      </Typography>
+    )
+  }
+
   return (
     <Button.Group>
       {MATCHUP_OPTIONS.map((o, i) => (
         <Button
           className={o.value === option?.value ? "!bg-blue-500" : ""}
           key={i}
-          disabled={isDitto}
           value={o?.value}
           color="gray"
           size="sm"

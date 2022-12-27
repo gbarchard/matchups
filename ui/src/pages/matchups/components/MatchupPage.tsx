@@ -51,7 +51,7 @@ export default function MatchupPage(props: {
         <h1>{title}</h1>
         <h2>Value: {average}</h2>
       </Typography>
-      {vote !== undefined && user?.sub && (
+      {vote !== undefined && (
         <VoteButtonGroup
           against={characterAgainst}
           as={characterAs}
