@@ -10,5 +10,9 @@
     {
         "id": "link",
         "label": "Link"
+    },
+    {
+        "id": "samus",
+        "label": "Samus / Dark Samus"
     }
 ]
