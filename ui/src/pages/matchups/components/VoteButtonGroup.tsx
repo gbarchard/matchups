@@ -50,16 +50,16 @@ export default function VoteButtonGroup(props: {
   )
   const { user } = useAuth0()
 
-  const isDitto = as.path === against.path
+  const isDitto = as.id === against.id
 
   const updateVote = (o: MatchupOption) => {
     if (!user?.sub) return
     const vote: Vote = {
       user_id: user.sub,
       data: [
-        { characterId: as.path, value: o.value },
+        { characterId: as.id, value: o.value },
         {
-          characterId: against.path,
+          characterId: against.id,
           value: 100 - o.value,
         },
       ],

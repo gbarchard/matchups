@@ -19,8 +19,8 @@ export default function App() {
       <Route path="/" element={<AllCharactersPage characters={characters} />} />
       {characters?.map((c) => (
         <Route
-          key={c.path}
-          path={`${c.path}/*`}
+          key={c.id}
+          path={`${c.id}/*`}
           element={
             <CharacterPage allCharacters={characters} selectedCharachter={c} />
           }

@@ -13,7 +13,7 @@ export default function MatchupPage(props: {
 
   const body = {
     user_id: user?.sub,
-    characterIds: [characterAgainst.path, characterAs.path],
+    characterIds: [characterAgainst.id, characterAs.id],
   }
 
   const { data: vote } = useFetch<Vote | null>(
@@ -32,7 +32,7 @@ export default function MatchupPage(props: {
     {
       method: "POST",
       body: JSON.stringify({
-        characterIds: [characterAs.path, characterAgainst.path],
+        characterIds: [characterAs.id, characterAgainst.id],
       }),
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export default function MatchupPage(props: {
     }
   )
 
-  const isDitto = characterAs.path === characterAgainst.path
+  const isDitto = characterAs.id === characterAgainst.id
   const title = isDitto
     ? `${characterAs.label} Ditto`
     : `${characterAs.label} vs ${characterAgainst.label}`
@@ -55,7 +55,7 @@ export default function MatchupPage(props: {
         <VoteButtonGroup
           against={characterAgainst}
           as={characterAs}
-          defaultValue={getVoteValue(vote, characterAgainst.path)}
+          defaultValue={getVoteValue(vote, characterAgainst.id)}
         />
       )}
     </>

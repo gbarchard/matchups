@@ -30,13 +30,13 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
         {characters.map((c) => (
           <Table.Row
             className="cursor-pointer"
-            key={c.path}
-            onClick={() => vistCharacterPage(c.path)}
+            key={c.id}
+            onClick={() => vistCharacterPage(c.id)}
           >
             <Table.Cell>
               <CharacterLabel character={c} />
             </Table.Cell>
-            <Table.Cell>{data?.[c.path] ?? "-"}</Table.Cell>
+            <Table.Cell>{data?.[c.id] ?? "-"}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

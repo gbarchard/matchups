@@ -19,8 +19,8 @@ export default function CharacterPage(props: {
       <Route path="/" element={<CharacterPageContent {...props} />} />
       {allCharacters.map((c) => (
         <Route
-          key={c.path}
-          path={c.path}
+          key={c.id}
+          path={c.id}
           element={
             <MatchupPage
               characterAgainst={c}
@@ -42,7 +42,7 @@ function CharacterPageContent(props: {
   const visitMatchupPage = (path: string) => navigate(path)
 
   const { user } = useAuth0()
-  const body = { user_id: user?.sub, characterId: selectedCharachter.path }
+  const body = { user_id: user?.sub, characterId: selectedCharachter.id }
   const { data: votes } = useFetch<Vote[]>(
     `${process.env.REACT_APP_API_BASE_URL}/api/votes`,
     {
@@ -58,7 +58,7 @@ function CharacterPageContent(props: {
     `${process.env.REACT_APP_API_BASE_URL}/api/average-votes`,
     {
       method: "POST",
-      body: JSON.stringify({ characterId: selectedCharachter.path }),
+      body: JSON.stringify({ characterId: selectedCharachter.id }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -80,22 +80,22 @@ function CharacterPageContent(props: {
           {allCharacters.map((c) => (
             <Table.Row
               className="cursor-pointer"
-              key={c.path}
-              onClick={() => visitMatchupPage(c.path)}
+              key={c.id}
+              onClick={() => visitMatchupPage(c.id)}
             >
               <Table.Cell>
                 <CharacterLabel character={c} />
               </Table.Cell>
-              <Table.Cell>{averages?.[c.path] ?? "-"}</Table.Cell>
+              <Table.Cell>{averages?.[c.id] ?? "-"}</Table.Cell>
               {votes && user?.sub && (
                 <Table.Cell>
                   <VoteButtonGroup
                     as={selectedCharachter}
                     against={c}
                     defaultValue={
-                      selectedCharachter.path === c.path
+                      selectedCharachter.id === c.id
                         ? 50
-                        : getVoteValue(votes, c.path)
+                        : getVoteValue(votes, c.id)
                     }
                   />
                 </Table.Cell>

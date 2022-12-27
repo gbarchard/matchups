@@ -75,7 +75,7 @@ export async function getMatchupAverages(
 
   for (let i = 0; i < characterData.length; i++) {
     const character = characterData[i]
-    const votes = await getAllVotesByMatchup([characterId, character.path])
+    const votes = await getAllVotesByMatchup([characterId, character.id])
     let total = 0
 
     votes.forEach((vote) => {
@@ -88,8 +88,8 @@ export async function getMatchupAverages(
 
     const average = total / votes.length
 
-    if (characterId !== character.path) {
-      averages[character.path] = average
+    if (characterId !== character.id) {
+      averages[character.id] = average
     }
   }
 
@@ -106,13 +106,11 @@ export async function getTotalScores(
   const voteMap: { [key: string]: { [key: string]: number[] } } = {}
 
   characterData.forEach((character) => {
-    voteMap[character.path] = {}
+    voteMap[character.id] = {}
     characterData.forEach((c) => {
-      voteMap[character.path][c.path] = []
+      voteMap[character.id][c.id] = []
     })
   })
-
-  // response.status(200).json(voteMap)
 
   votes.forEach((vote) => {
     voteMap[vote.data[0].characterId][vote.data[1].characterId].push(

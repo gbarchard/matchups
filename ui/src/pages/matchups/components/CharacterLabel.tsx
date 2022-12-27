@@ -12,7 +12,7 @@ export default function CharacterLabel(props: { character: Character }) {
           height={25}
           src={
             characterIcons[
-              kebabToCamel(character.path) as keyof typeof characterIcons
+              kebabToCamel(character.id) as keyof typeof characterIcons
             ]
           }
         />

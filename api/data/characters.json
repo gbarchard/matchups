@@ -1,17 +1,14 @@
 [
     {
-        "id": "1",
-        "label": "Mario",
-        "path": "mario"
+        "id": "mario",
+        "label": "Mario"
     },
     {
-        "id": "2",
-        "label": "Donkey Kong",
-        "path": "donkey-kong"
+        "id": "donkey-kong",
+        "label": "Donkey Kong"
     },
     {
-        "id": "3",
-        "label": "Link",
-        "path": "link"
+        "id": "link",
+        "label": "Link"
     }
 ]
