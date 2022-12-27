@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 import { Table } from "flowbite-react"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { useFetch } from "usehooks-ts"
+import TierList from "../../../components/TierList"
 import { Typography } from "../../../components/Typography"
 
 import { Character, Vote } from "../types"
@@ -31,6 +32,16 @@ export default function CharacterPage(props: {
       ))}
     </Routes>
   )
+}
+
+const MATCHUP_MAP = {
+  20: "-3",
+  30: "-2",
+  40: "-1",
+  50: "±0",
+  60: "+1",
+  70: "+2",
+  80: "+3",
 }
 
 function CharacterPageContent(props: {
@@ -65,11 +76,27 @@ function CharacterPageContent(props: {
     }
   )
 
+  const tiers: { [key: string]: Character[] } = {}
+
+  for (let i = 0; i < allCharacters.length; i++) {
+    const character = allCharacters[i]
+    const average = averages?.[character.id]
+    if (!average) continue
+    const roundedAvg = (10 *
+      Math.round(average / 10)) as unknown as keyof typeof MATCHUP_MAP
+    if (!(MATCHUP_MAP[roundedAvg] in tiers)) {
+      tiers[MATCHUP_MAP[roundedAvg]] = [character]
+    } else {
+      tiers[MATCHUP_MAP[roundedAvg]].push(character)
+    }
+  }
+
   return (
     <>
       <Typography className="mb-4">
         <h1>{selectedCharachter.label}</h1>
       </Typography>
+      <TierList className="my-4" tiers={tiers} />
       <Table striped hoverable>
         <Table.Head>
           <Table.HeadCell>Character</Table.HeadCell>
