@@ -1,7 +1,8 @@
-import { Character } from "../pages/matchups/types"
-import * as characterIcons from "../img"
+import classNames from "classnames"
 import { Avatar, Tooltip } from "flowbite-react"
 import { useNavigate } from "react-router-dom"
+import { Character } from "../pages/matchups/types"
+import * as characterIcons from "../img"
 
 interface TierListProps {
   className?: string
@@ -12,7 +13,9 @@ export default function TierList(props: TierListProps) {
   const { className, tiers } = props
 
   return (
-    <div className={"rounded-lg overflow-hidden shadow-md " + className}>
+    <div
+      className={classNames("rounded-lg overflow-hidden shadow-md", className)}
+    >
       {Object.keys(tiers).map((tier, idx) => (
         <Tier characters={tiers[tier]} label={tier} key={idx} index={idx} />
       ))}
@@ -39,18 +42,18 @@ function Tier(props: {
   return (
     <div className="flex">
       <div
-        className={
-          "flex flex-col justify-center text-center px-1 w-12 min-h-[4rem] overflow-hidden " +
+        className={classNames(
+          "flex flex-col justify-center text-center px-1 w-12 min-h-[4rem] overflow-hidden",
           TIER_COLORS[index]
-        }
+        )}
       >
         {label}
       </div>
       <div
-        className={
-          "flex-1 p-2 flex flex-wrap gap-2 " +
-          (index % 2 === 0 ? "dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-700")
-        }
+        className={classNames(
+          "flex-1 p-2 flex flex-wrap gap-2",
+          index % 2 === 0 ? "dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-700"
+        )}
       >
         {characters.map((character, idx) => (
           <Tooltip content={character.label} key={idx}>
