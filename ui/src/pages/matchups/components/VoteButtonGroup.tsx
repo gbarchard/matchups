@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Button } from "flowbite-react"
 import { Typography } from "../../../components/Typography"
 import { useUpdateVote } from "../../../api"
+import { useAuthentication } from "../../../components/UserLogin"
 
 type MatchupOption = {
   label: string
@@ -49,7 +50,8 @@ export default function VoteButtonGroup(props: {
   const [option, setOption] = useState<MatchupOption | null | undefined>(
     MATCHUP_OPTIONS.find((o) => o.value === defaultValue)
   )
-  const { user, isLoading, loginWithRedirect } = useAuth0()
+  const { user, isLoading } = useAuth0()
+  const { login } = useAuthentication()
 
   const isDitto = asId === againstId
 
@@ -66,7 +68,7 @@ export default function VoteButtonGroup(props: {
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              loginWithRedirect({ redirectUri: window.location.origin })
+              login()
             }}
           >
             Log In
