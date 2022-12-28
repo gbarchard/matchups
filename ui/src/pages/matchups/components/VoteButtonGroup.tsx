@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { useState } from "react"
 import { Button } from "flowbite-react"
-import { Vote } from "../types"
 import { Typography } from "../../../components/Typography"
+import { useUpdateVote } from "../../../api"
 
 type MatchupOption = {
   label: string
@@ -53,27 +53,7 @@ export default function VoteButtonGroup(props: {
 
   const isDitto = asId === againstId
 
-  const updateVote = (o: MatchupOption) => {
-    if (!user?.sub) return
-    const vote: Vote = {
-      user_id: user.sub,
-      data: [
-        { characterId: asId, value: o.value },
-        {
-          characterId: againstId,
-          value: 100 - o.value,
-        },
-      ],
-    }
-
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/update-vote`, {
-      method: "POST",
-      body: JSON.stringify(vote),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-  }
+  const updateVote = useUpdateVote()
 
   if (isDitto || isLoading) return null
 
@@ -109,7 +89,7 @@ export default function VoteButtonGroup(props: {
           onClick={(e) => {
             e.stopPropagation()
             setOption(o)
-            updateVote(o)
+            updateVote(asId, againstId, o.value)
           }}
         >
           {o.label}

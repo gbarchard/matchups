@@ -32,7 +32,7 @@ const checkJwt = auth({
 
 app.get("/api/got-here", checkJwt, gotHere)
 app.get("/api/characters", characters)
-app.post("/api/update-vote", setVote)
+app.post("/api/update-vote", checkJwt, setVote)
 app.post("/api/matchup-content", getMatchupContent)
 app.post("/api/character-content", getCharacterContent)
 app.post("/api/total-scores", getTotalScores)
