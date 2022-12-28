@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { useState } from "react"
 import { Button } from "flowbite-react"
-import { Character, Vote } from "../types"
+import { Vote } from "../types"
 import { Typography } from "../../../components/Typography"
 
 type MatchupOption = {
@@ -41,26 +41,26 @@ const MATCHUP_OPTIONS: MatchupOption[] = [
 ]
 
 export default function VoteButtonGroup(props: {
-  as: Character
-  against: Character
+  asId: string
+  againstId: string
   defaultValue?: number | null
 }) {
-  const { against, as, defaultValue } = props
+  const { againstId, asId, defaultValue } = props
   const [option, setOption] = useState<MatchupOption | null | undefined>(
     MATCHUP_OPTIONS.find((o) => o.value === defaultValue)
   )
   const { user, isLoading, loginWithRedirect } = useAuth0()
 
-  const isDitto = as.id === against.id
+  const isDitto = asId === againstId
 
   const updateVote = (o: MatchupOption) => {
     if (!user?.sub) return
     const vote: Vote = {
       user_id: user.sub,
       data: [
-        { characterId: as.id, value: o.value },
+        { characterId: asId, value: o.value },
         {
-          characterId: against.id,
+          characterId: againstId,
           value: 100 - o.value,
         },
       ],

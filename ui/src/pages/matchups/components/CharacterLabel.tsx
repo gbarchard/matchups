@@ -1,8 +1,9 @@
 import { Character } from "../types"
 import * as characterIcons from "../../../img"
 
-export default function CharacterLabel(props: { character: Character }) {
+export default function CharacterLabel(props: { character?: Character }) {
   const { character } = props
+  if (!character) return null
   return (
     <div className="flex space-x-2">
       <div>

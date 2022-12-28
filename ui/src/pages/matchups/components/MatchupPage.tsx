@@ -12,12 +12,12 @@ export default function MatchupPage(props: {
   const { user } = useAuth0()
 
   const body = {
-    user_id: user?.sub,
+    userId: user?.sub,
     characterIds: [characterAgainst.id, characterAs.id],
   }
 
-  const { data: vote } = useFetch<Vote | null>(
-    `${process.env.REACT_APP_API_BASE_URL}/api/vote`,
+  const { data } = useFetch<{ vote: Vote; average: number }>(
+    `${process.env.REACT_APP_API_BASE_URL}/api/matchup-content`,
     {
       method: "POST",
       body: JSON.stringify(body),
@@ -27,19 +27,9 @@ export default function MatchupPage(props: {
     }
   )
 
-  const { data: average } = useFetch<number>(
-    `${process.env.REACT_APP_API_BASE_URL}/api/average-vote`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        characterIds: [characterAs.id, characterAgainst.id],
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  )
+  if (!data) return null
 
+  const { average, vote } = data
   const isDitto = characterAs.id === characterAgainst.id
   const title = isDitto
     ? `${characterAs.label} Ditto`
@@ -51,13 +41,11 @@ export default function MatchupPage(props: {
         <h1>{title}</h1>
         <h2>Value: {average}</h2>
       </Typography>
-      {vote !== undefined && (
-        <VoteButtonGroup
-          against={characterAgainst}
-          as={characterAs}
-          defaultValue={getVoteValue(vote, characterAgainst.id)}
-        />
-      )}
+      <VoteButtonGroup
+        againstId={characterAgainst.id}
+        asId={characterAs.id}
+        defaultValue={getVoteValue(vote, characterAgainst.id)}
+      />
     </>
   )
 }

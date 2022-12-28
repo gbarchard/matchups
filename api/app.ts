@@ -5,11 +5,9 @@ import { auth } from "express-oauth2-jwt-bearer"
 import {
   gotHere,
   characters,
-  getMatchupAverage,
-  getVote,
-  getVotes,
+  getMatchupContent,
   setVote,
-  getMatchupAverages,
+  getCharacterContent,
   getTotalScores,
 } from "./api"
 import { connectToDatabase } from "./services/database.service"
@@ -34,11 +32,9 @@ const checkJwt = auth({
 
 app.get("/api/got-here", checkJwt, gotHere)
 app.get("/api/characters", characters)
-app.post("/api/vote", getVote)
 app.post("/api/update-vote", setVote)
-app.post("/api/votes", getVotes)
-app.post("/api/average-vote", getMatchupAverage)
-app.post("/api/average-votes", getMatchupAverages)
+app.post("/api/matchup-content", getMatchupContent)
+app.post("/api/character-content", getCharacterContent)
 app.post("/api/total-scores", getTotalScores)
 
 connectToDatabase()

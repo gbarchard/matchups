@@ -5,21 +5,13 @@ import CharacterLabel from "./CharacterLabel"
 import { useFetch } from "usehooks-ts"
 import TierList from "../../../components/TierList"
 
-const TIER_MAP = {
-  70: "S+",
-  60: "S",
-  50: "A",
-  40: "B",
-  30: "C",
-}
-
 export default function AllCharactersPage(props: { characters: Character[] }) {
   const { characters } = props
   const navigate = useNavigate()
 
   const vistCharacterPage = (path: string) => navigate(path)
 
-  const { data } = useFetch<{ [key: string]: number }>(
+  const { data } = useFetch<{ id: string; value: number; tier: string }[]>(
     `${process.env.REACT_APP_API_BASE_URL}/api/total-scores`,
     {
       method: "POST",
@@ -31,22 +23,18 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
 
   const tiers: { [key: string]: Character[] } = {}
 
-  for (const tier in TIER_MAP) {
-    tiers[TIER_MAP[tier as unknown as keyof typeof TIER_MAP]] = []
-  }
+  if (!data) return null
 
-  for (let i = 0; i < characters.length; i++) {
-    const character = characters[i]
-    const average = data?.[character.id]
-    if (!average) continue
-    const roundedAvg = (10 *
-      Math.round(average / 10)) as unknown as keyof typeof TIER_MAP
-    if (!(TIER_MAP[roundedAvg] in tiers)) {
-      tiers[TIER_MAP[roundedAvg]] = [character]
-    } else {
-      tiers[TIER_MAP[roundedAvg]].push(character)
+  data.forEach((character) => {
+    if (!tiers[character.tier]) {
+      tiers[character.tier] = []
     }
-  }
+    const c = characters.find((c) => c.id === character.id)
+
+    if (c) {
+      tiers[character.tier].push(c)
+    }
+  })
 
   return (
     <>
@@ -57,16 +45,18 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
           <Table.HeadCell>Score</Table.HeadCell>
         </Table.Head>
         <Table.Body>
-          {characters.map((c) => (
+          {data.map((row) => (
             <Table.Row
               className="cursor-pointer"
-              key={c.id}
-              onClick={() => vistCharacterPage(c.id)}
+              key={row.id}
+              onClick={() => vistCharacterPage(row.id)}
             >
               <Table.Cell>
-                <CharacterLabel character={c} />
+                <CharacterLabel
+                  character={characters.find((c) => c.id === row.id)}
+                />
               </Table.Cell>
-              <Table.Cell>{data?.[c.id] ?? "-"}</Table.Cell>
+              <Table.Cell>{row.value}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

@@ -1,99 +1,126 @@
 import { type Request, type Response, type NextFunction } from "express"
 import { Vote } from "../services/types"
-import characterData from "../data/characters.json"
 import {
-  getAllVotes,
-  getAllVotesByMatchup,
+  addVoteService,
   getVotesByCharacterService,
   getVoteService,
-  setVoteService,
+  updateVoteService,
 } from "../services/vote.service"
-
-export async function getVote(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  const { user_id, characterIds } = request.body
-  const vote = await getVoteService(user_id, characterIds)
-  response.status(200).json(vote)
-}
-
-export async function getVotes(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  const { user_id, characterId } = request.body
-  const votes = await getVotesByCharacterService(user_id, characterId)
-  return response.status(200).json(votes)
-}
+import {
+  addScoreService,
+  getScoresService,
+  updateScoreService,
+} from "../services/scores.service"
 
 export async function setVote(
   request: Request,
   response: Response,
   next: NextFunction
 ) {
-  await setVoteService(request.body as Vote)
-  return response.status(200).end()
+  const vote: Vote = request.body
+  const ids = [vote.data[0].characterId, vote.data[1].characterId]
+  if (ids[0] === ids[1]) return response.status(204)
+
+  const existingVote = await getVoteService(vote.user_id, [
+    vote.data[0].characterId,
+    vote.data[1].characterId,
+  ])
+
+  if (!existingVote) {
+    await addVoteService(vote)
+    await addScoreService(vote)
+    return response.status(200).json(true)
+  }
+
+  await updateVoteService({
+    _id: existingVote._id,
+    data: vote.data,
+    user_id: vote.user_id,
+  })
+  await updateScoreService(existingVote, vote)
+  return response.status(200).json(true)
 }
 
-export async function getMatchupAverage(
+export async function getMatchupContent(
   request: Request,
   response: Response,
   next: NextFunction
 ) {
-  const { characterIds } = request.body
+  const { characterIds, userId } = request.body
   if (!characterIds) return response.status(204).end()
   const [asId, againstId] = characterIds
   if (asId === againstId) return response.status(200).json(50)
-  const votes = await getAllVotesByMatchup(characterIds)
 
-  let total = 0
+  const scores = await getScoresService()
 
-  votes.forEach((vote) => {
-    if (vote.data[0].characterId === asId) {
-      total += vote.data[0].value
-    } else {
-      total += vote.data[1].value
-    }
-  })
+  const matchup = scores[asId]?.[againstId]
+  if (!matchup) return response.status(204)
 
-  const average = total / votes.length
+  const average = matchup.total / matchup.count
 
-  response.status(200).json(average)
+  const vote = await getVoteService(userId, characterIds)
+
+  const output = {
+    average,
+    vote,
+  }
+
+  response.status(200).json(output)
 }
 
-export async function getMatchupAverages(
+export async function getCharacterContent(
   request: Request,
   response: Response,
   next: NextFunction
 ) {
-  const { characterId } = request.body as { characterId: string }
+  const { characterId, userId } = request.body as {
+    characterId: string
+    userId: string
+  }
 
-  const averages: { [key: string]: number } = {}
+  const averages: { [key: string]: { average: number; count: number } } = {}
+  const scores = await getScoresService()
+  const votes = await getVotesByCharacterService(userId, characterId)
 
-  for (let i = 0; i < characterData.length; i++) {
-    const character = characterData[i]
-    const votes = await getAllVotesByMatchup([characterId, character.id])
-    let total = 0
-
-    votes.forEach((vote) => {
-      if (vote.data[0].characterId === characterId) {
-        total += vote.data[0].value
-      } else {
-        total += vote.data[1].value
-      }
-    })
-
-    const average = total / votes.length
-
-    if (characterId !== character.id) {
-      averages[character.id] = average
+  for (const character in scores[characterId]) {
+    const { count, total } = scores[characterId][character]
+    averages[character] = {
+      average: total / count,
+      count,
     }
   }
 
-  response.status(200).json(averages)
+  const sortedCharacters = Object.keys(averages)
+    .map((againstId) => {
+      const { average, count } = averages[againstId]
+      return {
+        id: againstId,
+        value: Math.round(average),
+        tier: getMatchupTierByValue(average),
+        vote: getVoteValue(votes, againstId),
+        count,
+      }
+    })
+    .sort((a, b) => (a.value < b.value ? 1 : -1))
+
+  response.status(200).json(sortedCharacters)
+}
+
+function getMatchupTierByValue(value: number) {
+  if (value < 25) return "-3"
+  if (value < 35) return "-2"
+  if (value < 45) return "-1"
+  if (value < 55) return "±0"
+  if (value < 65) return "+1"
+  if (value < 75) return "+2"
+  return "+3"
+}
+
+function getVoteValue(votes: Vote[], characterId: string) {
+  return (
+    votes.find((v) => v.data[0].characterId === characterId)?.data[1].value ??
+    votes.find((v) => v.data[1].characterId === characterId)?.data[0].value
+  )
 }
 
 export async function getTotalScores(
@@ -101,41 +128,40 @@ export async function getTotalScores(
   response: Response,
   next: NextFunction
 ) {
-  const votes = await getAllVotes()
+  const scores = await getScoresService()
 
-  const voteMap: { [key: string]: { [key: string]: number[] } } = {}
+  delete scores._id
 
-  characterData.forEach((character) => {
-    voteMap[character.id] = {}
-    characterData.forEach((c) => {
-      voteMap[character.id][c.id] = []
-    })
-  })
-
-  votes.forEach((vote) => {
-    voteMap[vote.data[0].characterId][vote.data[1].characterId].push(
-      vote.data[0].value
-    )
-
-    voteMap[vote.data[1].characterId][vote.data[0].characterId].push(
-      vote.data[1].value
-    )
-  })
-
-  let averageMap: { [key: string]: number } = {}
-  for (const i in voteMap) {
-    const character1 = voteMap[i]
+  const averageMap: { [key: string]: number } = {}
+  for (const character in scores) {
     const averages: number[] = []
-    for (const j in character1) {
-      const values = character1[j]
-      const average = values.reduce((a, b) => a + b, 0) / values.length
-      if (average) {
-        averages.push(average)
-      }
+    for (const votes in scores[character]) {
+      const { count, total } = scores[character][votes]
+      averages.push(total / count)
     }
-    const score = averages.reduce((a, b) => a + b, 0) / averages.length
-    averageMap[i] = score
+    averageMap[character] =
+      averages.reduce((a, b) => a + b, 0) /
+      Object.keys(scores[character]).length
   }
 
-  response.status(200).json(averageMap)
+  const sortedTierList = Object.keys(averageMap)
+    .map((characterId) => {
+      const value = averageMap[characterId]
+      return {
+        id: characterId,
+        value: Math.round(value),
+        tier: getTierByValue(value),
+      }
+    })
+    .sort((a, b) => (a.value < b.value ? 1 : -1))
+
+  response.status(200).json(sortedTierList)
+}
+
+function getTierByValue(value: number) {
+  if (value < 35) return "C"
+  if (value < 45) return "B"
+  if (value < 55) return "A"
+  if (value < 65) return "S"
+  return "S+"
 }
