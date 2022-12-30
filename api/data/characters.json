@@ -14,5 +14,9 @@
     {
         "id": "samus",
         "label": "Samus / Dark Samus"
+    },
+    {
+        "id": "yoshi",
+        "label": "Yoshi"
     }
 ]
