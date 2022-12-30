@@ -11,7 +11,7 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
 
   const vistCharacterPage = (path: string) => navigate(path)
 
-  const { data } = useFetch<{ id: string; value: number; tier: string }[]>(
+  const { data } = useFetch<{ id: string; value?: number; tier?: string }[]>(
     `${process.env.REACT_APP_API_BASE_URL}/api/total-scores`,
     {
       method: "POST",
@@ -25,16 +25,20 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
 
   if (!data) return null
 
-  data.forEach((character) => {
+  for (let i = 0; i < data.length; i++) {
+    const character = data[i]
+    if (!character.tier) continue
+
+    const c = characters.find((c) => c.id === character.id)
+
     if (!tiers[character.tier]) {
       tiers[character.tier] = []
     }
-    const c = characters.find((c) => c.id === character.id)
 
-    if (c) {
+    if (c && character.tier) {
       tiers[character.tier].push(c)
     }
-  })
+  }
 
   return (
     <>
@@ -56,7 +60,7 @@ export default function AllCharactersPage(props: { characters: Character[] }) {
                   character={characters.find((c) => c.id === row.id)}
                 />
               </Table.Cell>
-              <Table.Cell>{row.value}</Table.Cell>
+              <Table.Cell>{row.value ?? "-"}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

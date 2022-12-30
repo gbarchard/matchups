@@ -45,7 +45,13 @@ function CharacterPageContent(props: {
   const { user } = useAuth0()
 
   const { data } = useFetch<
-    { id: string; value: number; tier: string; vote: number; count: number }[]
+    {
+      id: string
+      value?: number
+      tier?: string
+      vote?: number
+      count?: number
+    }[]
   >(`${process.env.REACT_APP_API_BASE_URL}/api/character-content`, {
     method: "POST",
     body: JSON.stringify({
@@ -61,7 +67,10 @@ function CharacterPageContent(props: {
 
   if (!data) return null
 
-  data.forEach((character) => {
+  for (let i = 0; i < data.length; i++) {
+    const character = data[i]
+    if (!character.tier) continue
+
     if (!tiers[character.tier]) {
       tiers[character.tier] = []
     }
@@ -70,7 +79,7 @@ function CharacterPageContent(props: {
     if (c) {
       tiers[character.tier].push(c)
     }
-  })
+  }
 
   return (
     <>
@@ -97,9 +106,7 @@ function CharacterPageContent(props: {
                 />
               </Table.Cell>
               <Table.Cell>
-                {`${character.value ?? "-"} (${character.count} ${
-                  character.count === 1 ? "vote" : "votes"
-                })`}
+                {getVoteValueCell(character.value, character.count)}
               </Table.Cell>
               <Table.Cell>
                 <VoteButtonGroup
@@ -114,4 +121,12 @@ function CharacterPageContent(props: {
       </Table>
     </>
   )
+}
+
+function getVoteValueCell(
+  value: number | undefined,
+  count: number | undefined
+) {
+  if (!value) return "-"
+  return `${value} (${count} ${count === 1 ? "vote" : "votes"})`
 }

@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express"
+import characterData from "../data/characters.json"
 import { Vote } from "../services/types"
 import {
   addVoteService,
@@ -90,7 +91,13 @@ export async function getCharacterContent(
     }
   }
 
-  const sortedCharacters = Object.keys(averages)
+  const sortedCharacters: {
+    id: string
+    value?: number
+    tier?: string
+    vote?: number
+    count?: number
+  }[] = Object.keys(averages)
     .map((againstId) => {
       const { average, count } = averages[againstId]
       return {
@@ -102,6 +109,12 @@ export async function getCharacterContent(
       }
     })
     .sort((a, b) => (a.value < b.value ? 1 : -1))
+
+  characterData.forEach((character) => {
+    if (!(character.id in averages)) {
+      sortedCharacters.push({ id: character.id })
+    }
+  })
 
   response.status(200).json(sortedCharacters)
 }
@@ -144,16 +157,23 @@ export async function getTotalScores(
       Object.keys(scores[character]).length
   }
 
-  const sortedTierList = Object.keys(averageMap)
-    .map((characterId) => {
-      const value = averageMap[characterId]
-      return {
-        id: characterId,
-        value: Math.round(value),
-        tier: getTierByValue(value),
-      }
-    })
-    .sort((a, b) => (a.value < b.value ? 1 : -1))
+  const sortedTierList: { id: string; value?: number; tier?: string }[] =
+    Object.keys(averageMap)
+      .map((characterId) => {
+        const value = averageMap[characterId]
+        return {
+          id: characterId,
+          value: Math.round(value),
+          tier: getTierByValue(value),
+        }
+      })
+      .sort((a, b) => (a.value < b.value ? 1 : -1))
+
+  characterData.forEach((character) => {
+    if (!(character.id in averageMap)) {
+      sortedTierList.push({ id: character.id })
+    }
+  })
 
   response.status(200).json(sortedTierList)
 }
