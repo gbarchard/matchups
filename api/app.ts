@@ -8,7 +8,6 @@ import express, {
 } from "express"
 import { auth } from "express-oauth2-jwt-bearer"
 import {
-  gotHere,
   characters,
   getMatchupContent,
   setVote,
@@ -58,7 +57,6 @@ const JWT_WHITE_LIST = [
 
 app.use(unless(JWT_WHITE_LIST, checkJwt))
 
-app.get("/api/got-here", gotHere)
 app.get("/api/characters", characters)
 app.post("/api/update-vote", setVote)
 app.post("/api/matchup-content", getMatchupContent)
