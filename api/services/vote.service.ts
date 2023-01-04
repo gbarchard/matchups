@@ -7,7 +7,7 @@ export async function getVoteService(
   characterIds: [string, string]
 ) {
   if (characterIds[0] === characterIds[1]) return null
-  return await collections.votes.findOne({
+  return await collections.votes?.findOne({
     user_id,
     $and: [
       {
@@ -25,7 +25,7 @@ export async function getVotesByCharacterService(
   characterId: string
 ) {
   return await collections.votes
-    .find({
+    ?.find({
       user_id,
       data: { $elemMatch: { characterId } },
     })
@@ -33,14 +33,14 @@ export async function getVotesByCharacterService(
 }
 
 export async function addVoteService(vote: Vote) {
-  return collections.votes.insertOne(vote)
+  return collections.votes?.insertOne(vote)
 }
 
 export async function updateVoteService(vote: WithId<Vote>) {
   const { _id, data } = vote
-  return collections.votes.updateOne({ _id }, { $set: { data } })
+  return collections.votes?.updateOne({ _id }, { $set: { data } })
 }
 
 export async function getAllVotesService() {
-  return collections.votes.find().toArray()
+  return collections.votes?.find().toArray()
 }

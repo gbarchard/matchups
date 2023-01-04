@@ -56,7 +56,7 @@ export async function getMatchupContent(
 
   const scores = await getScoresService()
 
-  const matchup = scores[asId]?.[againstId]
+  const matchup = scores?.[asId]?.[againstId]
   if (!matchup) return response.status(204)
 
   const average = matchup.total / matchup.count
@@ -84,6 +84,8 @@ export async function getCharacterContent(
   const averages: { [key: string]: { average: number; count: number } } = {}
   const scores = await getScoresService()
   const votes = await getVotesByCharacterService(userId, characterId)
+
+  if (!scores || !votes) return response.status(204)
 
   for (const character in scores[characterId]) {
     const { count, total } = scores[characterId][character]
@@ -146,7 +148,9 @@ export async function getTotalScores(
 ) {
   const scores = await getScoresService()
 
-  delete scores._id
+  if (!scores) return response.status(204).end()
+
+  delete (scores as Partial<typeof scores>)._id
 
   const averageMap: { [key: string]: number } = {}
   for (const character in scores) {
@@ -172,7 +176,7 @@ export async function getTotalScores(
           tier: getTierByValue(value),
         }
       })
-      .sort((a, b) => (a.value < b.value ? 1 : -1))
+      .sort((a, b) => (a.value && b.value && a.value < b.value ? 1 : -1))
 
   characterData.forEach((character) => {
     if (!(character.id in averageMap)) {
@@ -213,6 +217,8 @@ export async function setScoresFromVotes(
 
   const votes = await getAllVotesService()
   const scores = await getScoresService()
+
+  if (!votes || !scores) return res.status(204)
 
   votes.forEach((vote) => {
     const ids = [vote.data[0].characterId, vote.data[1].characterId]
