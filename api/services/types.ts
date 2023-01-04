@@ -17,7 +17,7 @@ export interface Vote {
   data: [VoteValue, VoteValue]
 }
 
-type Scores = {
+export type Scores = {
   [key: string]: {
     [key: string]: {
       total: number

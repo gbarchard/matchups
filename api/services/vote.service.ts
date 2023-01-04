@@ -40,3 +40,7 @@ export async function updateVoteService(vote: WithId<Vote>) {
   const { _id, data } = vote
   return collections.votes.updateOne({ _id }, { $set: { data } })
 }
+
+export async function getAllVotesService() {
+  return collections.votes.find().toArray()
+}

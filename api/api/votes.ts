@@ -1,8 +1,9 @@
 import { type Request, type Response, type NextFunction } from "express"
 import characterData from "../data/characters.json"
-import { Vote } from "../services/types"
+import { Scores, Vote } from "../services/types"
 import {
   addVoteService,
+  getAllVotesService,
   getVotesByCharacterService,
   getVoteService,
   updateVoteService,
@@ -10,6 +11,7 @@ import {
 import {
   addScoreService,
   getScoresService,
+  replaceScoresService,
   updateScoreService,
 } from "../services/scores.service"
 
@@ -120,6 +122,7 @@ export async function getCharacterContent(
 }
 
 function getMatchupTierByValue(value: number) {
+  if (!value) return
   if (value < 25) return "-3"
   if (value < 35) return "-2"
   if (value < 45) return "-1"
@@ -150,11 +153,13 @@ export async function getTotalScores(
     const averages: number[] = []
     for (const votes in scores[character]) {
       const { count, total } = scores[character][votes]
-      averages.push(total / count)
+      if (count > 0) {
+        averages.push(total / count)
+      }
     }
     averageMap[character] =
       averages.reduce((a, b) => a + b, 0) /
-      Object.keys(scores[character]).length
+      averages.filter((a) => a !== 0).length
   }
 
   const sortedTierList: { id: string; value?: number; tier?: string }[] =
@@ -163,7 +168,7 @@ export async function getTotalScores(
         const value = averageMap[characterId]
         return {
           id: characterId,
-          value: Math.round(value),
+          value: Math.round(value) || undefined,
           tier: getTierByValue(value),
         }
       })
@@ -179,9 +184,45 @@ export async function getTotalScores(
 }
 
 function getTierByValue(value: number) {
+  if (!value) return
   if (value < 35) return "C"
   if (value < 45) return "B"
   if (value < 55) return "A"
   if (value < 65) return "S"
   return "S+"
+}
+
+export async function setScoresFromVotes(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const newScores: Scores = {}
+
+  characterData.forEach((characterAs) => {
+    newScores[characterAs.id] = {}
+    characterData.forEach((characterAgainst) => {
+      if (characterAs.id !== characterAgainst.id) {
+        newScores[characterAs.id][characterAgainst.id] = {
+          count: 0,
+          total: 0,
+        }
+      }
+    })
+  })
+
+  const votes = await getAllVotesService()
+  const scores = await getScoresService()
+
+  votes.forEach((vote) => {
+    const ids = [vote.data[0].characterId, vote.data[1].characterId]
+    newScores[ids[0]][ids[1]].count++
+    newScores[ids[0]][ids[1]].total += vote.data[0].value
+
+    newScores[ids[1]][ids[0]].count++
+    newScores[ids[1]][ids[0]].total += vote.data[1].value
+  })
+
+  await replaceScoresService(scores._id, newScores)
+  res.status(200).json(true)
 }

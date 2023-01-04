@@ -15,6 +15,7 @@ import {
   getCharacterContent,
   getTotalScores,
 } from "./api"
+import { setScoresFromVotes } from "./api/votes"
 import { connectToDatabase } from "./services/database.service"
 
 const app = express()
@@ -63,5 +64,6 @@ app.post("/api/update-vote", setVote)
 app.post("/api/matchup-content", getMatchupContent)
 app.post("/api/character-content", getCharacterContent)
 app.post("/api/total-scores", getTotalScores)
+app.get("/api/calculate-scores", setScoresFromVotes)
 
 connectToDatabase()

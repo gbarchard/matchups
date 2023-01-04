@@ -1,5 +1,6 @@
+import { ObjectId } from "mongodb"
 import { collections } from "./database.service"
-import { Vote } from "./types"
+import { Scores, Vote } from "./types"
 
 export async function getScoresService() {
   return await collections.scores.findOne()
@@ -44,4 +45,8 @@ export async function updateScoreService(previousVote: Vote, newVote: Vote) {
   scores[ids[1]][ids[0]].total += newValues[1] - previousValues[1]
 
   return collections.scores.findOneAndReplace({ _id: scores._id }, scores)
+}
+
+export async function replaceScoresService(id: ObjectId, scores: Scores) {
+  return collections.scores.findOneAndReplace({ _id: id }, scores)
 }
