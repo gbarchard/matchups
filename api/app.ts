@@ -6,6 +6,7 @@ import express, {
   type Request,
   type Response,
 } from "express"
+import "express-async-errors"
 import { auth } from "express-oauth2-jwt-bearer"
 import {
   characters,
@@ -63,5 +64,17 @@ app.post("/api/matchup-content", getMatchupContent)
 app.post("/api/character-content", getCharacterContent)
 app.post("/api/total-scores", getTotalScores)
 app.get("/api/calculate-scores", setScoresFromVotes)
+
+function errorHandler(
+  error: Error,
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  console.error(error)
+  response.status(500).send(error.message)
+}
+
+app.use(errorHandler)
 
 connectToDatabase()
