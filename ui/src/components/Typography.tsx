@@ -6,7 +6,7 @@ export function Typography(props: PropsWithChildren<{ className?: string }>) {
   return (
     <div
       className={classNames(
-        "format dark:format-invert lg:format-lg",
+        "format dark:format-invert lg:format-lg format-blue",
         className
       )}
     >
